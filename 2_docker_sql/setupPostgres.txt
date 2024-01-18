@@ -1,14 +1,27 @@
+
+winpty 	docker network create pg-network
+
 winpty docker run -i \
  --env POSTGRES_USER="root" \
  --env POSTGRES_PASSWORD="root" \
  --env POSTGRES_DB="ny_taxi" \
  --volume D:/DOCUMENTOS/INGENIERIA/Cursos/Zoomcamp\ DE/DataEngineeringZoomcamp/2_docker_sql/ny_taxi_postgres_data:/var/lib/postgresql/data \
  --publish 5432:5432 \
+ --network=pg-network \
+ --name pg-database \
  postgres:13
 
 
+winpty 	docker run -it \
+	-e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+	-e PGADMIN_DEFAULT_PASSWORD="root" \
+	-p 8080:80 \
+    --network=pg-network \
+    --name pgadmin \
+	dpage/pgadmin4
 
 
 -e flag allows to set up environment variables
 -v volumes is a way of mapping folders in host machine in the container, this helps to keep progress saved since the files live in the host machine and those won’t be deleted
 -p map a port in host machine in the container, this is needed for requests
+
