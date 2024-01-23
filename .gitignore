@@ -2,3 +2,8 @@
 
 *.csv
 *.parquet
+*.json
+*.tfstate
+*.hcl
+*.exe
+*.backup
