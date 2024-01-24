@@ -8,14 +8,14 @@ terraform {
 }
 
 provider "google" {
-  project = "thinking-glass-412101"
-  region  = "us-central1"
-  credentials = "./keys/my-creds.json"
+  project     = var.project
+  region      = var.region
+  credentials = file(var.credentials)
 }
 
 resource "google_storage_bucket" "demo-bucket" {
-  name          = "thinking-glass-412101-terra-bucket"
-  location      = "US"
+  name          = var.gcs_bucket_name
+  location      = var.location
   force_destroy = true
 
   lifecycle_rule {
@@ -26,4 +26,9 @@ resource "google_storage_bucket" "demo-bucket" {
       type = "AbortIncompleteMultipartUpload"
     }
   }
+}
+
+resource "google_bigquery_dataset" "demo_dataset" {
+  dataset_id = var.bq_dataset_name
+  location   = var.location
 }
