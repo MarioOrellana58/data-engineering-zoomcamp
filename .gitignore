@@ -47,3 +47,4 @@ terraform.rc
 *.pub
 gcp
 config
+Module 1/2_docker_sql/ny_taxi_postgres_data/*
