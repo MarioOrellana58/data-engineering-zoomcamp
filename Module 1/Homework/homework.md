@@ -25,7 +25,7 @@ Which tag has the following text? - *Automatically remove the container when it 
 - `--rmc`
 - `--rm`
 
-Answer: --rm
+Answer: --rm 
 
 
 ## Question 2. Understanding docker first run 
@@ -40,7 +40,7 @@ What is version of the package *wheel* ?
 - 23.0.1
 - 58.1.0
 
-Answer: 0.42.0
+Answer: 0.42.0 
 
 # Prepare Postgres
 
@@ -69,6 +69,9 @@ Remember that `lpep_pickup_datetime` and `lpep_dropoff_datetime` columns are in 
 - 15859
 - 89009
 
+select count(1) from trips where lpep_pickup_datetime >= '2019-09-18' and lpep_dropoff_datetime < '2019-09-19'
+Answer: 15612
+
 ## Question 4. Largest trip for each day
 
 Which was the pick up day with the largest trip distance
@@ -79,6 +82,12 @@ Use the pick up time for your calculations.
 - 2019-09-26
 - 2019-09-21
 
+SELECT * FROM TRIPS
+WHERE trip_distance = (
+	SELECT MAX(trip_distance) FROM trips
+)
+
+Answer: 2019-09-26
 
 ## Question 5. Three biggest pick up Boroughs
 
@@ -92,6 +101,17 @@ Which were the 3 pick up Boroughs that had a sum of total_amount superior to 500
 - "Brooklyn" "Queens" "Staten Island"
 
 
+SELECT DISTINCT Z."Borough"
+FROM Zones Z
+WHERE Z."LocationID" IN (
+    SELECT T."PULocationID"
+    FROM Trips T
+    GROUP BY T."PULocationID"
+    HAVING SUM(T.total_amount) > 50000
+);
+
+Answer: "Brooklyn" "Manhattan" "Queens"
+
 ## Question 6. Largest tip
 
 For the passengers picked up in September 2019 in the zone name Astoria which was the drop off zone that had the largest tip?
@@ -104,7 +124,20 @@ Note: it's not a typo, it's `tip` , not `trip`
 - JFK Airport
 - Long Island City/Queens Plaza
 
+SELECT Z."Zone"
+FROM Trips T
+INNER JOIN Zones Z ON T."DOLocationID" = Z."LocationID"
+WHERE tip_amount = (
+	SELECT MAX(tip_amount)
+	FROM Trips T
+	INNER JOIN Zones Z ON T."PULocationID" = Z."LocationID"
+	WHERE 
+		lpep_pickup_datetime >= '2019-09-01' 
+		AND lpep_dropoff_datetime < '2019-10-01'
+		AND Z."Zone" = 'Astoria'
+)
 
+Answer: JFK Airport
 
 ## Terraform
 
@@ -126,6 +159,126 @@ terraform apply
 ```
 
 Paste the output of this command into the homework submission form.
+
+###Check Folder 4_GCP for this
+
+
+mario@LAPTOP-MHM32UUF MINGW64 /d/DOCUMENTOS/INGENIERIA/Cursos/Zoomcamp DE/DataEngineeringZoomcamp/Module 1/4_GCP (master)
+$ terraform apply
+google_compute_instance.de-zoomcamp: Refreshing state... [id=projects/thinking-glass-412101/zones/us-central1-a/instances/de-zoomcamp]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # google_compute_instance.de-zoomcamp will be created
+  + resource "google_compute_instance" "de-zoomcamp" {
+      + can_ip_forward       = false
+      + cpu_platform         = (known after apply)
+      + current_status       = (known after apply)
+      + deletion_protection  = false
+      + effective_labels     = {
+          + "goog-ec-src" = "vm_add-tf"
+        }
+      + enable_display       = false
+      + guest_accelerator    = (known after apply)
+      + id                   = (known after apply)
+      + instance_id          = (known after apply)
+      + label_fingerprint    = (known after apply)
+      + labels               = {
+          + "goog-ec-src" = "vm_add-tf"
+        }
+      + machine_type         = "e2-standard-4"
+      + metadata_fingerprint = (known after apply)
+      + min_cpu_platform     = (known after apply)
+      + name                 = "de-zoomcamp"
+      + project              = "thinking-glass-412101"
+      + self_link            = (known after apply)
+      + tags_fingerprint     = (known after apply)
+      + terraform_labels     = {
+          + "goog-ec-src" = "vm_add-tf"
+        }
+      + zone                 = "us-central1-a"
+
+      + boot_disk {
+          + auto_delete                = true
+          + device_name                = "de-zoomcamp"
+          + disk_encryption_key_sha256 = (known after apply)
+          + kms_key_self_link          = (known after apply)
+          + mode                       = "READ_WRITE"
+          + source                     = (known after apply)
+
+          + initialize_params {
+              + image                  = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240110"
+              + labels                 = (known after apply)
+              + provisioned_iops       = (known after apply)
+              + provisioned_throughput = (known after apply)
+              + size                   = 30
+              + type                   = "pd-balanced"
+            }
+        }
+
+      + network_interface {
+          + internal_ipv6_prefix_length = (known after apply)
+          + ipv6_access_type            = (known after apply)
+          + ipv6_address                = (known after apply)
+          + name                        = (known after apply)
+          + network                     = (known after apply)
+          + network_ip                  = (known after apply)
+          + queue_count                 = 0
+          + stack_type                  = "IPV4_ONLY"
+          + subnetwork                  = "projects/thinking-glass-412101/regions/us-central1/subnetworks/default"
+          + subnetwork_project          = (known after apply)
+
+          + access_config {
+              + nat_ip       = (known after apply)
+              + network_tier = "PREMIUM"
+            }
+        }
+
+      + scheduling {
+          + automatic_restart   = true
+          + on_host_maintenance = "MIGRATE"
+          + preemptible         = false
+          + provisioning_model  = "STANDARD"
+        }
+
+      + service_account {
+          + email  = "182971974119-compute@developer.gserviceaccount.com"
+          + scopes = [
+              + "https://www.googleapis.com/auth/devstorage.read_only",
+              + "https://www.googleapis.com/auth/logging.write",
+              + "https://www.googleapis.com/auth/monitoring.write",
+              + "https://www.googleapis.com/auth/service.management.readonly",
+              + "https://www.googleapis.com/auth/servicecontrol",
+              + "https://www.googleapis.com/auth/trace.append",
+            ]
+        }
+
+      + shielded_instance_config {
+          + enable_integrity_monitoring = true
+          + enable_secure_boot          = false
+          + enable_vtpm                 = true
+        }
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+google_compute_instance.de-zoomcamp: Creating...
+google_compute_instance.de-zoomcamp: Still creating... [10s elapsed]
+google_compute_instance.de-zoomcamp: Creation complete after 13s [id=projects/thinking-glass-412101/zones/us-central1-a/instances/de-zoomcamp]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+
+mario@LAPTOP-MHM32UUF MINGW64 /d/DOCUMENTOS/INGENIERIA/Cursos/Zoomcamp DE/DataEngineeringZoomcamp/Module 1/4_GCP (master)
+$
 
 
 ## Submitting the solutions

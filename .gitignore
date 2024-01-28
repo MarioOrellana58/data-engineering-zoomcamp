@@ -48,3 +48,4 @@ terraform.rc
 gcp
 config
 Module 1/2_docker_sql/ny_taxi_postgres_data/*
+Module 1/Homework/ny_taxi_postgres_data/*
